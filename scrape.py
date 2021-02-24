@@ -1,5 +1,5 @@
 import requests
-# from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 
 class ScrapeTarcov():
     """
@@ -13,14 +13,28 @@ class ScrapeTarcov():
 
     def scrape_ammo(self):
         ammo_url = self.base_url + "弾薬"
-        print(ammo_url)
 
+        # get text
+        res = ""
         try:
-            response = requests.get(ammo_url)
-        except Exception as e:
-            print(e)
-            return None 
-        return response.text
+            res = requests.get(ammo_url)
+        except Exception: # as e
+            # print(e)
+            return None
+
+        soup = BeautifulSoup(res.text, "html.parser")
+        lists = soup.find_all("h2")
+        cnt = 0
+        for list in lists:
+            # 見出しに弾が入っていない物は除去
+            if not "弾" in list.contents[0]:
+                continue
+            cnt += 1
+            if cnt == 1:
+                print(list)
+            with open("out/" + str(cnt)+".txt", "w") as f:
+                f.write(str(list.contents))
+        return res.text
 
 
 if __name__ == "__main__":
