@@ -1,1 +1,0 @@
-['拳銃弾  ', <a class="anchor_super" id="y0428942" name="y0428942"></a>, ' ', <a class="anchor_super" href="/eft/?cmd=edit&amp;page=%E5%BC%BE%E8%96%AC&amp;id=y0428942"><img alt="" height="9" src="https://cdn.wikiwiki.jp/to/w/common/image/plus/paraedit.png?v=4" title="Edit" width="9"/></a>]

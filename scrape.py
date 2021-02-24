@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import csv
 
 class ScrapeTarcov():
     """
@@ -23,22 +24,28 @@ class ScrapeTarcov():
             return None
 
         soup = BeautifulSoup(res.text, "html.parser")
-        lists = soup.find_all("h2")
-        cnt = 0
+        # h3が弾の詳細が書かれている部分
+        lists = soup.find_all("h3")
         for list in lists:
-            # 見出しに弾が入っていない物は除去
-            if not "弾" in list.contents[0]:
+            # 弾薬の選び方は無視する
+            if "弾薬" in list:
                 continue
-            cnt += 1
-            if cnt == 1:
-                print(list)
-            with open("out/" + str(cnt)+".txt", "w") as f:
-                f.write(str(list.contents))
+            ammos = list.find_next().find_next().find_next().find_next().select_one("table > tbody > tr > td:nth-child(2)")
+            # 見出しに弾が入っていない物は除去
+            if ammos == None:
+                continue
+            ammo_name = list.next_element
+            print(ammo_name)
+            with open("out/" + ammo_name + ".csv", "w") as f:
+                if ammos != None:
+                    ammos_a = ammos.find_all('a')
+                    writer = csv.writer(f)
+                    writer.writerows(ammos_a)
         return res.text
 
 
 if __name__ == "__main__":
     st = ScrapeTarcov("https://wikiwiki.jp/eft/")
     resp = st.scrape_ammo()
-    print(resp)
+    # print(resp)
     
