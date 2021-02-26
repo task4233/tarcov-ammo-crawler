@@ -10,6 +10,7 @@ class ScrapeTarcov():
 
     def __init__(self, base_url):
         self.base_url = base_url
+        self.guns = {}
         pass
 
     def scrape_ammo(self):
@@ -37,20 +38,44 @@ class ScrapeTarcov():
                 continue
             ammo_name = list.next_element
             print(ammo_name)
+            usable_ammos_for_gun = []
             try:
-                with open("out/" + ammo_name + ".csv", "w") as f:
-                    if ammos != None:
-                        ammos_a = ammos.find_all('a')
-                        writer = csv.writer(f)
-                        writer.writerows(ammos_a)
+                if ammos != None:
+                    ammos_a = ammos.find_all('a')
+                    [usable_ammos_for_gun.append(am.get_text()) for am in ammos_a]
             except Exception as e:
                 print(e)
                 return None
+            self.guns[ammo_name] = usable_ammos_for_gun
+        print('====================guns==========================')
+        for key in self.guns.keys():
+            print(key)
+            print(self.guns[key])
         return res.text
+    
+    def scrape_guns(self):
+        guns_url = self.base_url + "武器一覧"
 
+        # get text
+        res = ""
+        try:
+            res = requests.get(guns_url)
+        except Exception as e:
+            return e
+
+        soup = BeautifulSoup(res.text, "html.parser")
+        tbodies = soup.find_all("tbody")
+        for tbody in tbodies:
+            print("=================tbody==================")
+            tds = tbody.find_all("td")
+            # print(tds)
+            print(tds.find_all('td:nth-child(1)'))
+        return None
 
 if __name__ == "__main__":
     st = ScrapeTarcov("https://wikiwiki.jp/eft/")
-    resp = st.scrape_ammo()
-    # print(resp)
+    err = st.scrape_guns()
+    if err != None:
+        print(err)
+    print("Run successfully")
     
